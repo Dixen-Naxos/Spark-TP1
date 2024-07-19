@@ -6,26 +6,38 @@ services:
     ports:
       - "8080:8080"
       - "4040:4040"
+    volumes:
+      - ./app:/app
   spark-worker-1:
     container_name: "spark-worker-1"
     image: alexisptr/spark-worker:latest
     restart: unless-stopped
+    depends_on:
+      - spark-master
     ports:
       - "8081:8080"
+    volumes:
+      - ./app:/app
   spark-worker-2:
     container_name: "spark-worker-2"
     image: alexisptr/spark-worker:latest
     restart: unless-stopped
+    depends_on:
+      - spark-master
     ports:
       - "8082:8080"
+    volumes:
+      - ./app:/app
   jupyter-notebook:
     container_name: "jupyter-notebook"
     image: jupyter/pyspark-notebook
     restart: unless-stopped
     ports:
       - "8888:8888"
-      - "4042:4040"
-      - "4041:4041"
+    environment:
+      - "JUPYTER_TOKEN=pizza"
+    volumes:
+      - ./app:/home/dixen
 
 # docker exec -it spark-master /bin/bash
 # ./bin/spark-submit --master spark://0.0.0.0:7077 --name spark-pi --class org.apache.spark.examples.SparkPi /opt/spark/examples/jars/spark-examples_2.12-3.5.1.jar 1000
